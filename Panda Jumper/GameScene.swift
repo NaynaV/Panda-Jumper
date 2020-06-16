@@ -10,19 +10,20 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-    let mario = SKSpriteNode(imageNamed: "mario1")
+    let panda = SKSpriteNode(imageNamed: "mypanda")
      var lastUpdateTime: TimeInterval = 0
      var dt: TimeInterval = 0
-     let marioMovePointsPerSec: CGFloat = 480.0
+     let pandaMovePointsPerSec: CGFloat = 480.0
      var velocity = CGPoint.zero
      let playableRect: CGRect
      var lastTouchLocation: CGPoint?
-     let marioMove: SKAction
-     let marioAnimation: SKAction
-     let jumpSound: SKAction = SKAction.playSoundFileNamed(
-       "jumpSound.wav", waitForCompletion: false)
-     let enemyCollisionSound: SKAction = SKAction.playSoundFileNamed(
-       "loselifeSound.wav", waitForCompletion: false)
+     let pandaMove: SKAction
+     let pandaAnimation: SKAction
+    
+    // let jumpSound: SKAction = SKAction.playSoundFileNamed(
+      // "jumpSound.wav", waitForCompletion: false)
+    // let enemyCollisionSound: SKAction = SKAction.playSoundFileNamed(
+    //   "loselifeSound.wav", waitForCompletion: false)
      var invincible = false
 
      var lives = 7
@@ -44,17 +45,17 @@ class GameScene: SKScene {
        // 1
        var textures:[SKTexture] = []
        // 2
-       for i in 1...12 {
-         textures.append(SKTexture(imageNamed: "mario\(i)"))
-       }
+        for i in 1...12 {
+            textures.append(SKTexture(imageNamed: "mypanda\(i)"))
+          }
        // 3
        textures.append(textures[2])
        textures.append(textures[1])
 
        // 4
-       marioAnimation = SKAction.animate(with: textures,
+       pandaAnimation = SKAction.animate(with: textures,
          timePerFrame: 0.1)
-       marioMove = SKAction.moveBy(x: 0 + mario.size.width, y: 0, duration: 1.5)
+       pandaMove = SKAction.moveBy(x: 0 + panda.size.width, y: 0, duration: 1.5)
      
        super.init(size: size)
      }
