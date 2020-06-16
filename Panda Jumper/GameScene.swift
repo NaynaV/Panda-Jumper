@@ -17,8 +17,8 @@ class GameScene: SKScene {
      var velocity = CGPoint.zero
      let playableRect: CGRect
      var lastTouchLocation: CGPoint?
-     let pandaMove: SKAction
-     let pandaAnimation: SKAction
+    // let pandaMove: SKAction
+    // let pandaAnimation: SKAction
     
     // let jumpSound: SKAction = SKAction.playSoundFileNamed(
       // "jumpSound.wav", waitForCompletion: false)
@@ -26,7 +26,7 @@ class GameScene: SKScene {
     //   "loselifeSound.wav", waitForCompletion: false)
      var invincible = false
 
-     var lives = 7
+     var lives = 3
      var gameOver = false
      let cameraNode = SKCameraNode()
      let cameraMovePointsPerSec: CGFloat = 200.0
@@ -34,7 +34,7 @@ class GameScene: SKScene {
      let livesLabel = SKLabelNode(fontNamed: "Chalkduster")
 
        
-     override init(size: CGSize) {
+        /*   override init(size: CGSize) {
        let maxAspectRatio:CGFloat = 16.0/9.0
        let playableHeight = size.width / maxAspectRatio
        let playableMargin = (size.height-playableHeight)/2.0
@@ -43,7 +43,7 @@ class GameScene: SKScene {
                              height: playableHeight)
        
        // 1
-       var textures:[SKTexture] = []
+      var textures:[SKTexture] = []
        // 2
         for i in 1...12 {
             textures.append(SKTexture(imageNamed: "mypanda\(i)"))
@@ -54,16 +54,26 @@ class GameScene: SKScene {
 
        // 4
        pandaAnimation = SKAction.animate(with: textures,
-         timePerFrame: 0.1)
+    timePerFrame: 0.1)
        pandaMove = SKAction.moveBy(x: 0 + panda.size.width, y: 0, duration: 1.5)
      
        super.init(size: size)
-     }
+     } */
+    override init(size: CGSize) {
+     let maxAspectRatio:CGFloat = 16.0/9.0 // 1
+     let playableHeight = size.width / maxAspectRatio // 2
+     let playableMargin = (size.height-playableHeight)/2.0 // 3
+     playableRect = CGRect(x: 0, y: playableMargin,
+     width: size.width,
+     height: playableHeight) // 4
+     super.init(size: size) // 5
+    }
 
      required init(coder aDecoder: NSCoder) {
        fatalError("init(coder:) has not been implemented")
      }
-     
+    
+  /*
      var cameraRect : CGRect {
        let x = cameraNode.position.x - size.width/2
            + (size.width - playableRect.width)/2
@@ -74,7 +84,8 @@ class GameScene: SKScene {
          y: y,
          width: playableRect.width,
          height: playableRect.height)
-     }
+     }*/
+    
      func debugDrawPlayableArea() {
        let shape = SKShapeNode()
        let path = CGMutablePath()
@@ -84,6 +95,127 @@ class GameScene: SKScene {
        shape.lineWidth = 4.0
        addChild(shape)
      }
+    override func didMove(to view: SKView) {
+       backgroundColor = SKColor.black
+       let background = SKSpriteNode(imageNamed: "bakground")
+        background.anchorPoint = CGPoint(x: 0.5, y: 0.5) // default
+        background.position = CGPoint(x: size.width/2, y: size.height/1.4)
+        background.setScale(2)
+       // background.zRotation = CGFloat(M_PI) / 8
+       background.zPosition = -1
+       addChild(background)
+       
+       let mySize = background.size
+       print("Size: \(mySize)")
+       
+       panda.position = CGPoint(x: 350, y: 350)
+        panda.setScale(5)
+    //   zombie.setScale(2) // SKNode method
+       addChild(panda)
+       debugDrawPlayableArea()
+        go()
+     }
+    
+    func go(){
+
+    
+        let moveRight = SKAction.move(to: CGPoint(x: playableRect.width, y:  320), duration: 2)
+
+        let RPL = SKAction.scaleX(to: panda.xScale * -1, duration: 0)
+
+        let moveLeft = SKAction.move(to: CGPoint(x: 0, y:  320), duration: 2)
+
+        let RPR = SKAction.scaleX(to: panda.xScale , duration: 0)
+
+
+
+panda.run(SKAction.repeatForever(SKAction.sequence([moveRight, RPL, moveLeft, RPR])))
+
+    }
+    
+    
+    override func update(_ currentTime: TimeInterval) {
+        if lastUpdateTime > 0 {
+         dt = currentTime - lastUpdateTime
+        } else {
+         dt = 0
+        }
+        lastUpdateTime = currentTime
+    move(sprite: panda, velocity: velocity)
+        print("\(dt*1000) milliseconds since last update")
+        boundsCheckPanda()
+        //rotate(sprite: panda, direction: velocity)
+    }
+    
+    func move(sprite: SKSpriteNode, velocity: CGPoint) {
+     // 1
+     let amountToMove = CGPoint(x: velocity.x * CGFloat(dt),
+     y: velocity.y * CGFloat(dt))
+     print("Amount to move: \(amountToMove)")
+     // 2
+     sprite.position = CGPoint(
+     x: sprite.position.x + amountToMove.x,
+     y: sprite.position.y + amountToMove.y)
+    }
+    
+    
+    func movePandaToward(location: CGPoint) {
+     let offset = CGPoint(x: location.x - panda.position.x,
+     y: location.y - panda.position.y)
+        let length = sqrt(
+        Double(offset.x * offset.x + offset.y * offset.y))
+        let direction = CGPoint(x: offset.x / CGFloat(length),
+         y: offset.y / CGFloat(length))
+        velocity = CGPoint(x: direction.x * pandaMovePointsPerSec, y: direction.y * pandaMovePointsPerSec)
+    }
+    func sceneTouched(touchLocation:CGPoint) {
+     //movePandaToward(location: touchLocation)
+    }
+    override func touchesBegan(_ touches: Set<UITouch>,
+     with event: UIEvent?) {
+     guard let touch = touches.first else {
+     return
+     }
+        
+     let touchLocation = touch.location(in: self)
+     sceneTouched(touchLocation: touchLocation)
+    }
+    override func touchesMoved(_ touches: Set<UITouch>,
+     with event: UIEvent?) {
+     guard let touch = touches.first else {
+     return
+     }
+     let touchLocation = touch.location(in: self)
+     sceneTouched(touchLocation: touchLocation)
+    }
+    func boundsCheckPanda() {
+    let bottomLeft = CGPoint(x: 0, y: playableRect.minY)
+     let topRight = CGPoint(x: size.width, y: playableRect.maxY)
+
+     if panda.position.x <= bottomLeft.x {
+     panda.position.x = bottomLeft.x
+     velocity.x = -velocity.x
+     }
+     if panda.position.x >= topRight.x {
+     panda.position.x = topRight.x
+     velocity.x = -velocity.x
+     }
+     if panda.position.y <= bottomLeft.y {
+     panda.position.y = bottomLeft.y
+     velocity.y = -velocity.y
+     }
+     if panda.position.y >= topRight.y {
+     panda.position.y = topRight.y
+     velocity.y = -velocity.y
+     }
+    }
+    func rotate(sprite: SKSpriteNode, direction: CGPoint) {
+   sprite.xScale = sprite.xScale * -1;
+   //     sprite.zRotation = CGFloat(
+    //atan2(Double(direction.y), Double(direction.x)))
+    }
+    
+    /*
        func moveCamera() {
           let backgroundVelocity =
             CGPoint(x: cameraMovePointsPerSec, y: 0)
@@ -128,12 +260,12 @@ class GameScene: SKScene {
          return backgroundNode
        }
      func spawnEnemy() {
-       let enemy = SKSpriteNode(imageNamed: "Enemy")
+       let enemy = SKSpriteNode(imageNamed: "spikes")
        enemy.position = CGPoint(
          x: cameraRect.maxX + enemy.size.width/2,
          y: cameraRect.minY + 80)
        enemy.zPosition = 50
-       enemy.name = "Enemy"
+       enemy.name = "spikes"
        enemy.setScale(0.7)
        addChild(enemy)
        
@@ -149,7 +281,7 @@ class GameScene: SKScene {
        }
      override func didMove(to view: SKView) {
 
-       playBackgroundMusic(filename: "BgSound.wav")
+      // playBackgroundMusic(filename: "BgSound.wav")
      
        for i in 0...1 {
          let background = backgroundNode()
@@ -161,11 +293,11 @@ class GameScene: SKScene {
          addChild(background)
        }
        
-       mario.position = CGPoint(x: 400, y: 300)
-       mario.zPosition = 100
-       addChild(mario)
-       mario.run(SKAction.repeatForever(marioAnimation))
-       mario.run(SKAction.repeatForever(marioMove))
+       panda.position = CGPoint(x: 460, y: 460)
+       panda.zPosition = 100
+       addChild(panda)
+       panda.run(SKAction.repeatForever(pandaAnimation))
+       panda.run(SKAction.repeatForever(pandaMove))
        
        run(SKAction.repeatForever(
          SKAction.sequence([SKAction.run() { [weak self] in
@@ -206,12 +338,12 @@ class GameScene: SKScene {
            node.isHidden = remainder > slice / 2
          }
          let setHidden = SKAction.run() { [weak self] in
-           self?.mario.isHidden = false
+           self?.panda.isHidden = false
            self?.invincible = false
          }
-         mario.run(SKAction.sequence([blinkAction, setHidden]))
+         panda.run(SKAction.sequence([blinkAction, setHidden]))
          
-         run(enemyCollisionSound)
+        // run(enemyCollisionSound)
          
        
          lives -= 1
@@ -224,10 +356,10 @@ class GameScene: SKScene {
          }
         
          var hitEnemies: [SKSpriteNode] = []
-         enumerateChildNodes(withName: "Enemy") { node, _ in
+         enumerateChildNodes(withName: "spikes") { node, _ in
            let enemy = node as! SKSpriteNode
            if node.frame.insetBy(dx: 20, dy: 20).intersects(
-             self.mario.frame) {
+             self.panda.frame) {
              hitEnemies.append(enemy)
            }
          }
@@ -239,7 +371,7 @@ class GameScene: SKScene {
        let actionJump : SKAction
        actionJump = SKAction.moveBy(x: 0, y: 350, duration: 0.7)
        let jumpSequence = SKAction.sequence([actionJump, actionJump.reversed()])
-       mario.run(jumpSequence)
+       panda.run(jumpSequence)
        
        }
        override func touchesBegan(_ touches: Set<UITouch>,
@@ -261,7 +393,7 @@ class GameScene: SKScene {
        lastUpdateTime = currentTime
      
        
-        move(sprite: mario, velocity: velocity)
+        move(sprite: panda, velocity: velocity)
        moveCamera()
        livesLabel.text = "Lives: \(lives)"
        checkCollisions()
@@ -282,7 +414,7 @@ class GameScene: SKScene {
     
      
     
-
+*/
        
     
 }
