@@ -15,6 +15,8 @@
 		EB5A9E402499766F00B8D3E8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB5A9E3E2499766F00B8D3E8 /* LaunchScreen.storyboard */; };
 		EB5A9E4824997A4500B8D3E8 /* MyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5A9E4724997A4500B8D3E8 /* MyUtils.swift */; };
 		EB5A9E4C24999CC700B8D3E8 /* demo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5A9E4B24999CC700B8D3E8 /* demo.swift */; };
+		EB5A9E4E2499C35500B8D3E8 /* secondLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5A9E4D2499C35500B8D3E8 /* secondLevel.swift */; };
+		EB5A9E502499C39700B8D3E8 /* gameOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5A9E4F2499C39700B8D3E8 /* gameOver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +30,8 @@
 		EB5A9E412499766F00B8D3E8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB5A9E4724997A4500B8D3E8 /* MyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyUtils.swift; sourceTree = "<group>"; };
 		EB5A9E4B24999CC700B8D3E8 /* demo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = demo.swift; sourceTree = "<group>"; };
+		EB5A9E4D2499C35500B8D3E8 /* secondLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = secondLevel.swift; sourceTree = "<group>"; };
+		EB5A9E4F2499C39700B8D3E8 /* gameOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gameOver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +73,8 @@
 				EB5A9E352499766D00B8D3E8 /* GameScene.swift */,
 				EB5A9E4B24999CC700B8D3E8 /* demo.swift */,
 				EB5A9E4724997A4500B8D3E8 /* MyUtils.swift */,
+				EB5A9E4D2499C35500B8D3E8 /* secondLevel.swift */,
+				EB5A9E4F2499C39700B8D3E8 /* gameOver.swift */,
 			);
 			path = "Panda Jumper";
 			sourceTree = "<group>";
@@ -144,8 +150,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB5A9E4E2499C35500B8D3E8 /* secondLevel.swift in Sources */,
 				EB5A9E362499766D00B8D3E8 /* GameScene.swift in Sources */,
 				EB5A9E382499766D00B8D3E8 /* GameViewController.swift in Sources */,
+				EB5A9E502499C39700B8D3E8 /* gameOver.swift in Sources */,
 				EB5A9E302499766D00B8D3E8 /* AppDelegate.swift in Sources */,
 				EB5A9E4C24999CC700B8D3E8 /* demo.swift in Sources */,
 				EB5A9E4824997A4500B8D3E8 /* MyUtils.swift in Sources */,

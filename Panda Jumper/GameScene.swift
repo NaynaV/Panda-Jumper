@@ -17,19 +17,14 @@ class GameScene: SKScene {
      let pandaMovePointsPerSec: CGFloat = 480.0
      var velocity = CGPoint.zero
      let playableRect: CGRect
-    var coinCollected = 0
+   let maxMovePerSecond = 100
      var lastTouchLocation: CGPoint?
-    // let pandaMove: SKAction
-  //  let pandaAnimation: SKAction
-    
-    // let jumpSound: SKAction = SKAction.playSoundFileNamed(
-      // "jumpSound.wav", waitForCompletion: false)
-    // let enemyCollisionSound: SKAction = SKAction.playSoundFileNamed(
-    //   "loselifeSound.wav", waitForCompletion: false)
+  
      var invincible = false
 
     
-    var lives = 5
+    var lives = 3
+     var coinCollected = 0
       let livesLabel = SKLabelNode(fontNamed: "Chalkduster")
     
       let scoresLabel = SKLabelNode(fontNamed: "Chalkduster")
@@ -70,137 +65,256 @@ class GameScene: SKScene {
      }
     override func didMove(to view: SKView) {
        backgroundColor = SKColor.black
-       let background = SKSpriteNode(imageNamed: "bakground")
-        background.anchorPoint = CGPoint(x: 0.5, y: 0.5) // default
+        
+        let background = SKSpriteNode(imageNamed: "bakground")
+               background.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         background.position = CGPoint(x: size.width/2, y: size.height/1.4)
-        background.setScale(2)
-       // background.zRotation = CGFloat(M_PI) / 8
-       background.zPosition = -1
-       addChild(background)
+               background.zPosition = -1
+               addChild(background)
+         background.setScale(2)
+               //debugDrawPlayableArea()
+               
+               panda.position = CGPoint(x:350,
+                                        y:350)
+               panda.setScale(5.0)
+               
+            //   velocity = CGPoint(x:maxMovePerSecond, y:0)
+               addChild(panda)
         
-      
+        spawnSpikes()
+                     spawnSpikes()
+                     spawnCoin()
+                     
+       /*  let background = SKSpriteNode(imageNamed: "bakground")
+            background.anchorPoint = CGPoint(x: 0.5, y: 0.5) // default
+            background.position = CGPoint(x: size.width/2, y: size.height/1.4)
+            background.setScale(2)
+           // background.zRotation = CGFloat(M_PI) / 8
+           background.zPosition = -1
+           addChild(background)
+            
+
+           
+           panda.position = CGPoint(x: 350, y: 400)
+            panda.setScale(5)
+        addChild(panda)*/
        
-       let mySize = background.size
-       print("Size: \(mySize)")
-       
-       panda.position = CGPoint(x: 350, y: 400)
-        panda.setScale(5)
-        
-        run(SKAction.repeatForever(SKAction.sequence([SKAction.run() { [weak self] in
-                          self?.spawnEnemy()
-                        },SKAction.wait(forDuration: 3.0)])))
-
-        spawnCat()
-          spawnCat2()
-        
-        
-        //spikes.setScale(3)
-
-          //     spikes.position = CGPoint(x: 800, y: 310)
-
-            //   spikes.name = "spikes"
-   
-       addChild(panda)
-      //  addChild(spikes)
-       debugDrawPlayableArea()
-        go()
-     //   spawnCoin()
-      //  spawnEnemy()
-        
-        livesLabel.text = "Lives:\(lives)"
-               livesLabel.fontColor = SKColor.black
-               livesLabel.fontSize = 100
-               livesLabel.zPosition = 100
-               livesLabel.horizontalAlignmentMode = .left
-               livesLabel.verticalAlignmentMode = .bottom
-              livesLabel.position = CGPoint(x: 100, y: 1220)
-               addChild(livesLabel)
+      // debugDrawPlayableArea()
+go()
+    
+         livesLabel.text = "Lives: \(lives)"
+              livesLabel.fontColor = .black
+              livesLabel.fontSize = 100
+              livesLabel.zPosition = 1300
+              livesLabel.position = CGPoint(x:300,
+                                           y:500)
+              addChild(livesLabel)
         
      }
     
-    
-    
-    
-    
-    func spawnEnemy() {
-         let enemy = SKSpriteNode(imageNamed: "spikes")
-         enemy.position = CGPoint(
-           x: playableRect.maxX + enemy.size.width/2,
-           y: playableRect.minY + 100)
-         enemy.zPosition = 50
-        enemy.setScale(5)
-         enemy.name = "enemy"
-         addChild(enemy)
-         
-         let actionMove =
-           SKAction.moveBy(x: -(size.width + enemy.size.width), y: 5, duration: 2.0)
-         let actionRemove = SKAction.removeFromParent()
-        // enemy.run(SKAction.sequence([actionMove, actionRemove]))
+    func boundsCheckPanda() {
+      let bottomLeft = CGPoint(x: 0, y: playableRect.minY)
+       let topRight = CGPoint(x: size.width, y: playableRect.maxY)
+
+       if panda.position.x <= bottomLeft.x {
+       panda.position.x = bottomLeft.x
+       velocity.x = -velocity.x
        }
+       if panda.position.x >= topRight.x {
+       panda.position.x = topRight.x
+       velocity.x = -velocity.x
+       }
+       if panda.position.y <= bottomLeft.y {
+       panda.position.y = bottomLeft.y
+       velocity.y = -velocity.y
+       }
+       if panda.position.y >= topRight.y {
+       panda.position.y = topRight.y
+       velocity.y = -velocity.y
+       }
+      }
+        
+        override func update(_ currentTime: TimeInterval) {
+            
+               if(lastUpdateTime>0)
+               {
+                    dt = currentTime - lastUpdateTime
+                }
+                lastUpdateTime = currentTime
+              boundsCheckPanda()
+            move(sprite: panda, velocity:velocity)
+          collideSpike()
+            livesLabel.text = "Lives \(lives)"
+       /*
+            if lives<=0
+            {
+                let gameOverScene = gameOver(size: size, won: false)
+                let reveal = SKTransition.flipHorizontal(withDuration: 1.0)
+                view?.presentScene(gameOverScene,transition: reveal )
+            }
+            
+            if coinCollected>=1 && !exitShown
+            {
+                spawnExit()
+                exitShown = true
+            }
+           
+          */
+        }
+        
+        
+        func move(sprite:SKSpriteNode, velocity:CGPoint)
+        {
+            let amountToMove = CGPoint(x:velocity.x * CGFloat(dt),
+                                       y:velocity.y * CGFloat(dt))
+            sprite.position += amountToMove
+             
+            
+        }
+        
+    func collideSpike()
+    {
+        var spikes:[SKSpriteNode] = []
+        enumerateChildNodes(withName: "spike")
+        {
+            node, _ in
+            let spike = node as! SKSpriteNode
+            if spike.frame.insetBy(dx: 30, dy: 30).intersects(self.panda.frame.insetBy(dx: 20, dy: 20))
+            {
+                //self.lastChanged -= 1
+                spikes.append(spike)
+                spike.removeFromParent()
+                self.lives -= 1
+                self.panda.position = CGPoint(x:100,
+                                                    y:150)
+               
+                
+                
+             
+            }
+            
+           
+        }
+        for spike in spikes
+        {
+            spike.removeFromParent()
+             self.spawnSpikes()
+            
+        }
        
-       func spawnCat() {
-         // 1
-         let coin = SKSpriteNode(imageNamed: "coin2")
-         coin.name = "coin"
-         coin.position = CGPoint(
-           x: playableRect.minX + 700,
-           y: playableRect.minY + 100)
-         coin.zPosition = 50
-         coin.setScale(0)
-         addChild(coin)
-         // 2
-         let appear = SKAction.scale(to: 1.0, duration: 0.2)
-
-         let actions = [appear]
-         coin.run(SKAction.sequence(actions))
-       }
-       func spawnExit() {
-         // 1
-         let exit = SKSpriteNode(imageNamed: "exit")
-         exit.name = "exit"
-         exit.position = CGPoint(
-           x: playableRect.maxX - 150,
-           y: playableRect.minY + 100)
-         exit.zPosition = 50
-         exit.setScale(5)
-         addChild(exit)
-         // 2
-         let appear = SKAction.scale(to: 1.0, duration: 0.5)
-
-         let actions = [appear]
-         exit.run(SKAction.sequence(actions))
-       }
+        enumerateChildNodes(withName: "coin")
+        {node ,_ in
+                     
+            let coin = node as! SKSpriteNode
+                if coin.frame.intersects(self.panda.frame)
+            {
+                self.coinCollected += 1
+                coin.removeFromParent()
+            }
+        
+        }
        
-       func spawnCat2() {
-         // 1
-         let coin = SKSpriteNode(imageNamed: "coin2")
-         coin.name = "coin"
-         coin.position = CGPoint(
-           x: playableRect.minX + 1300,
-           y: playableRect.minY + 100)
-         coin.zPosition = 50
-         coin.setScale(5)
-         addChild(coin)
-         // 2
-         let appear = SKAction.scale(to: 1.0, duration: 0.5)
-
-         let actions = [appear]
-         coin.run(SKAction.sequence(actions))
+        
+        enumerateChildNodes(withName: "exit")
+        {
+            node, _ in
+            
+            let exit = node as! SKSpriteNode
+            if exit.frame.insetBy(dx: 50   , dy: 50).intersects(self.panda.frame)
+            {
+                self.panda.removeFromParent()
+                
+                let levelTwo = secondLevel(size:self.size)
+                let reveal = SKTransition.reveal(with: .up, duration: 1.0)
+                self.view?.presentScene(levelTwo, transition: reveal)
+            }
+            
+            
+        }
+        //reset()
+    }
+    
+   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+       
+       jump(panda: panda, velocity: velocity)
+       print("TOUCH HAPPENED")
+   }
+   
+    
+    
+    func jump(panda:SKSpriteNode, velocity:CGPoint)
+       {
+           var xVal:CGFloat = 100.0
+           if velocity.x <= 0
+           {
+               print("Going Right")
+               xVal = -xVal
+           }
+           else
+           {
+               xVal = CGFloat(abs(xVal))
+               print("Going Left")
+           }
+           
+       
+           let goUp = SKAction.moveBy(x: xVal, y: 600, duration: 0.5)
+           let goDown = SKAction.moveBy(x: xVal, y: -600, duration: 0.5)
+           
+           let sequence:[SKAction] = [goUp, goDown]
+           
+           
+           
+           panda.run(SKAction.sequence(sequence))
+           
        }
     
-    
-    
+
+   func spawnSpikes()
+   {
+       let spike = SKSpriteNode(imageNamed: "spikes")
+       spike.position = CGPoint(x: CGFloat.random(min: playableRect.minX + 150,
+                                                  max:playableRect.maxX - 150),
+                               y:300 )
+      spike.setScale(3.0)
+       spike.name = "spike"
+       addChild(spike)
+       
+   }
+   
+   func spawnCoin()
+   {
+       let coin = SKSpriteNode(imageNamed: "coin")
+       coin.position = CGPoint(x: CGFloat.random(min: playableRect.minX + 150,
+                          max:playableRect.maxX - 150),
+       y:300 )
+       coin.name = "coin"
+       coin.setScale(0.3)
+       addChild(coin)
+   }
+   
+   func spawnExit()
+   {
+       let coin = SKSpriteNode(imageNamed: "exit")
+       coin.position = CGPoint(x: CGFloat.random(min: playableRect.minX + 150,
+                          max:playableRect.maxX - 150),
+       y:300 )
+       coin.name = "exit"
+       coin.setScale(0.3)
+       addChild(coin)
+   }
+   
+   
     
     
     
     func go(){
 
     
-        let moveRight = SKAction.move(to: CGPoint(x: playableRect.width, y:  320), duration: 2)
+        let moveRight = SKAction.move(to: CGPoint(x: playableRect.width, y:  320), duration: 5)
 
         let RPL = SKAction.scaleX(to: panda.xScale * -1, duration: 0)
 
-        let moveLeft = SKAction.move(to: CGPoint(x: 0, y:  320), duration: 2)
+        let moveLeft = SKAction.move(to: CGPoint(x: 0, y:  320), duration: 5)
 
         let RPR = SKAction.scaleX(to: panda.xScale , duration: 0)
 
@@ -210,32 +324,19 @@ panda.run(SKAction.repeatForever(SKAction.sequence([moveRight, RPL, moveLeft, RP
 
     }
     
+        func reset()
+           {
+               
+                    panda.position = CGPoint(x:100,
+                                             y:150)
+           }
+
+   func sceneTouched(touchLocation:CGPoint) {
+    //movePandaToward(location: touchLocation)
+   }
+   
     
-    override func update(_ currentTime: TimeInterval) {
-        if lastUpdateTime > 0 {
-         dt = currentTime - lastUpdateTime
-        } else {
-         dt = 0
-        }
-        lastUpdateTime = currentTime
-    move(sprite: panda, velocity: velocity)
-        print("\(dt*1000) milliseconds since last update")
-        boundsCheckPanda()
-        //rotate(sprite: panda, direction: velocity)
-    }
-    
-    func move(sprite: SKSpriteNode, velocity: CGPoint) {
-     // 1
-     let amountToMove = CGPoint(x: velocity.x * CGFloat(dt),
-     y: velocity.y * CGFloat(dt))
-     print("Amount to move: \(amountToMove)")
-     // 2
-     sprite.position = CGPoint(
-     x: sprite.position.x + amountToMove.x,
-     y: sprite.position.y + amountToMove.y)
-    }
-    
-    
+    /*
     func movePandaToward(location: CGPoint) {
      let offset = CGPoint(x: location.x - panda.position.x,
      y: location.y - panda.position.y)
@@ -248,39 +349,8 @@ panda.run(SKAction.repeatForever(SKAction.sequence([moveRight, RPL, moveLeft, RP
     
     
     
-    func sceneTouched(touchLocation:CGPoint) {
-     //movePandaToward(location: touchLocation)
-    }
-    override func touchesBegan(_ touches: Set<UITouch>,
-     with event: UIEvent?) {
-     guard let touch = touches.first else {
-     return
-     }
-
-     let touchLocation = touch.location(in: self)
-     sceneTouched(touchLocation: touchLocation)
-        
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
-    }
     
     
-    func touchDown(atPoint pos: CGPoint) {
-            print("jump")
-            jump()
-        }
-
-        func jump() {
-           // playBackgroundMusic(filename: "jumpSound.wav")
-            let jumpUpAction = SKAction.moveBy(x: 0, y: 800, duration: 0.3)
-            // move down 20
-            let jumpDownAction = SKAction.moveBy(x: 0, y: -800, duration: 0.6)
-            // sequence of move yup then down
-            let jumpSequence = SKAction.sequence([jumpUpAction, jumpDownAction])
-
-            // make player run sequence
-            panda.run(jumpSequence)
-   
-        }
 
         override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
             for t in touches { self.touchUp(atPoint: t.location(in: self)) }
@@ -304,27 +374,12 @@ panda.run(SKAction.repeatForever(SKAction.sequence([moveRight, RPL, moveLeft, RP
      let touchLocation = touch.location(in: self)
      sceneTouched(touchLocation: touchLocation)
     }
-    func boundsCheckPanda() {
-    let bottomLeft = CGPoint(x: 0, y: playableRect.minY)
-     let topRight = CGPoint(x: size.width, y: playableRect.maxY)
-
-     if panda.position.x <= bottomLeft.x {
-     panda.position.x = bottomLeft.x
-     velocity.x = -velocity.x
-     }
-     if panda.position.x >= topRight.x {
-     panda.position.x = topRight.x
-     velocity.x = -velocity.x
-     }
-     if panda.position.y <= bottomLeft.y {
-     panda.position.y = bottomLeft.y
-     velocity.y = -velocity.y
-     }
-     if panda.position.y >= topRight.y {
-     panda.position.y = topRight.y
-     velocity.y = -velocity.y
-     }
-    }
+    
+    
+  
+    
+    
+    
     func rotate(sprite: SKSpriteNode, direction: CGPoint) {
    sprite.xScale = sprite.xScale * -1;
    //     sprite.zRotation = CGFloat(
@@ -347,186 +402,7 @@ panda.run(SKAction.repeatForever(SKAction.sequence([moveRight, RPL, moveLeft, RP
     
     
     
-    func moveTrain() {
-    
-      var trainCount = 0
-      var targetPosition = panda.position
-      
-      enumerateChildNodes(withName: "train") { node, stop in
-        trainCount += 1
-        if !node.hasActions() {
-          let actionDuration = 0.3
-          let offset = targetPosition - node.position
-          let direction = offset.normalized()
-          let amountToMovePerSec = direction * self.pandaMovePointsPerSec
-          let amountToMove = amountToMovePerSec * CGFloat(actionDuration)
-          let moveAction = SKAction.moveBy(x: amountToMove.x, y: amountToMove.y, duration: actionDuration)
-          node.run(moveAction)
-        }
-        targetPosition = node.position
-      }
-      
-      if trainCount >= 2 && !gameOver {
-        gameOver = true
-        print("You win!")
-      //  backgroundMusicPlayer.stop()
-        
-        // 1
-       //   let gameOverScene = GameOverScene(size: size, won: true, score: coinCollected)
-      //  gameOverScene.scaleMode = scaleMode
-        // 2
-      //
-        let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
-        // 3
-        //view?.presentScene(gameOverScene, transition: reveal)
-      }
-      
-    }
-    
-    func loseCats() {
-      // 1
-      var loseCount = 0
-      enumerateChildNodes(withName: "train") { node, stop in
-        // 2
-        var randomSpot = node.position
-        randomSpot.x += CGFloat.random(min: -100, max: 100)
-        randomSpot.y += CGFloat.random(min: -100, max: 100)
-        // 3
-        node.name = ""
-        node.run(
-          SKAction.sequence([
-            SKAction.group([
-              SKAction.rotate(byAngle: π*4, duration: 1.0),
-              SKAction.move(to: randomSpot, duration: 1.0),
-              SKAction.scale(to: 0, duration: 1.0)
-              ]),
-            SKAction.removeFromParent()
-          ]))
-        // 4
-        loseCount += 1
-        if loseCount >= 2 {
-          stop[0] = true
-        }
-      }
-    }
-    
-    
-    func pandaHit(enemy: SKSpriteNode) {
-
-         invincible = true
-
-         let blinkTimes = 10.0
-
-         let duration = 3.0
-
-         let blinkAction = SKAction.customAction(withDuration: duration) { node, elapsedTime in
-
-           let slice = duration / blinkTimes
-
-           let remainder = Double(elapsedTime).truncatingRemainder(
-
-             dividingBy: slice)
-
-           node.isHidden = remainder > slice / 2
-
-         }
-
-         let setHidden = SKAction.run() { [weak self] in
-
-           self?.panda.isHidden = false
-
-           self?.invincible = false
-
-         }
-
-         panda.run(SKAction.sequence([blinkAction, setHidden]))
-
-         
-
-       
-
-         lives -= 1
-
-       
-
-       }
-
-       
-
-       func pandaCollect(coin: SKSpriteNode) {
-
-           coin.removeFromParent()
-
-           coinCollected += 1
-
-       
-
-       }
-
-       
-
-       func checkCollisions() {
-
-
-
-         if invincible {
-
-           return
-
-         }
-
-        
-
-         var hitEnemies: [SKSpriteNode] = []
-
-         enumerateChildNodes(withName: "spikes") { node, _ in
-
-           let enemy = node as! SKSpriteNode
-
-           if node.frame.insetBy(dx: 20, dy: 20).intersects(
-
-             self.panda.frame) {
-
-             hitEnemies.append(enemy)
-
-           }
-
-         }
-
-         for enemy in hitEnemies {
-
-           pandaHit(enemy: enemy)
-
-         }
-
-           
-
-           var hitCoins: [SKSpriteNode] = []
-
-           enumerateChildNodes(withName: "coin") { node, _ in
-
-             let coin = node as! SKSpriteNode
-
-               
-
-               if node.frame.insetBy(dx: 20, dy: 20).intersects(
-
-                 self.panda.frame) {
-
-                 hitCoins.append(coin)
-
-               }
-
-             }
-
-             for coin in hitCoins {
-
-               pandaCollect(coin: coin)
-
-             }
-
-           
-
+    */
              
 
        }
@@ -622,5 +498,5 @@ panda.run(SKAction.repeatForever(SKAction.sequence([moveRight, RPL, moveLeft, RP
        
   
        
-    
-}
+
+
