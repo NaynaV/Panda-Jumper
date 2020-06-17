@@ -14,7 +14,7 @@
 		EB5A9E3D2499766F00B8D3E8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB5A9E3C2499766F00B8D3E8 /* Assets.xcassets */; };
 		EB5A9E402499766F00B8D3E8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB5A9E3E2499766F00B8D3E8 /* LaunchScreen.storyboard */; };
 		EB5A9E4824997A4500B8D3E8 /* MyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5A9E4724997A4500B8D3E8 /* MyUtils.swift */; };
-		EB5A9E4A24998ECC00B8D3E8 /* demo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5A9E4924998ECC00B8D3E8 /* demo.swift */; };
+		EB5A9E4C24999CC700B8D3E8 /* demo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5A9E4B24999CC700B8D3E8 /* demo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 		EB5A9E3F2499766F00B8D3E8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EB5A9E412499766F00B8D3E8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB5A9E4724997A4500B8D3E8 /* MyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyUtils.swift; sourceTree = "<group>"; };
-		EB5A9E4924998ECC00B8D3E8 /* demo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = demo.swift; sourceTree = "<group>"; };
+		EB5A9E4B24999CC700B8D3E8 /* demo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = demo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,14 +61,14 @@
 			isa = PBXGroup;
 			children = (
 				EB5A9E2F2499766D00B8D3E8 /* AppDelegate.swift */,
-				EB5A9E352499766D00B8D3E8 /* GameScene.swift */,
 				EB5A9E372499766D00B8D3E8 /* GameViewController.swift */,
 				EB5A9E392499766D00B8D3E8 /* Main.storyboard */,
 				EB5A9E3C2499766F00B8D3E8 /* Assets.xcassets */,
 				EB5A9E3E2499766F00B8D3E8 /* LaunchScreen.storyboard */,
 				EB5A9E412499766F00B8D3E8 /* Info.plist */,
+				EB5A9E352499766D00B8D3E8 /* GameScene.swift */,
+				EB5A9E4B24999CC700B8D3E8 /* demo.swift */,
 				EB5A9E4724997A4500B8D3E8 /* MyUtils.swift */,
-				EB5A9E4924998ECC00B8D3E8 /* demo.swift */,
 			);
 			path = "Panda Jumper";
 			sourceTree = "<group>";
@@ -147,7 +147,7 @@
 				EB5A9E362499766D00B8D3E8 /* GameScene.swift in Sources */,
 				EB5A9E382499766D00B8D3E8 /* GameViewController.swift in Sources */,
 				EB5A9E302499766D00B8D3E8 /* AppDelegate.swift in Sources */,
-				EB5A9E4A24998ECC00B8D3E8 /* demo.swift in Sources */,
+				EB5A9E4C24999CC700B8D3E8 /* demo.swift in Sources */,
 				EB5A9E4824997A4500B8D3E8 /* MyUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
